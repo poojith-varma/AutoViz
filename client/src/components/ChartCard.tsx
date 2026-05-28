@@ -15,6 +15,10 @@ import {
   Tooltip,
 } from "recharts";
 
+import html2canvas from "html2canvas";
+
+import { useRef } from "react";
+
 type Props = {
   chart: any;
   data: any[];
@@ -24,129 +28,237 @@ export default function ChartCard({
   chart,
   data,
 }: Props) {
+
+  const chartRef =
+    useRef<HTMLDivElement>(null);
+
   const safeData = data.filter(
-  (item) => {
-    // PIE charts only need xAxis
-    if (
-      chart.chartType === "pie"
-    ) {
+    (item) => {
+
+      // PIE charts only need xAxis
+      if (
+        chart.chartType ===
+        "pie"
+      ) {
+        return (
+          item[
+            chart.xAxis
+          ] !== undefined
+        );
+      }
+
+      // Other charts need both axes
       return (
-        item[chart.xAxis] !==
-        undefined
+        item[
+          chart.xAxis
+        ] !== undefined &&
+        item[
+          chart.yAxis
+        ] !== undefined
+      );
+    }
+  );
+
+  const aggregateData = () => {
+
+    // BAR + PIE
+    if (
+      chart.chartType ===
+        "bar" ||
+      chart.chartType ===
+        "pie"
+    ) {
+
+      const grouped: any =
+        {};
+
+      safeData.forEach(
+        (row) => {
+
+          const key =
+            row[
+              chart.xAxis
+            ];
+
+          const value =
+            Number(
+              row[
+                chart
+                  .yAxis
+              ]
+            ) || 0;
+
+          if (
+            !grouped[key]
+          ) {
+            grouped[key] = 0;
+          }
+
+          grouped[key] +=
+            value;
+        }
+      );
+
+      return Object.entries(
+        grouped
+      ).map(
+        ([key, value]) => ({
+          [chart.xAxis]:
+            key,
+
+          [chart.yAxis]:
+            value,
+        })
       );
     }
 
-    // Other charts need both axes
-    return (
-      item[chart.xAxis] !==
-        undefined &&
-      item[chart.yAxis] !==
-        undefined
-    );
-  }
-);
+    // LINE
+    if (
+      chart.chartType ===
+      "line"
+    ) {
 
-  const aggregateData = () => {
-  // BAR + PIE
-  if (
-    chart.chartType === "bar" ||
-    chart.chartType === "pie"
-  ) {
-    const grouped: any = {};
+      const grouped: any =
+        {};
 
-    safeData.forEach((row) => {
-      const key =
-        row[chart.xAxis];
+      safeData.forEach(
+        (row) => {
 
-      const value =
-        Number(
-          row[chart.yAxis]
-        ) || 0;
-
-      if (!grouped[key]) {
-        grouped[key] = 0;
-      }
-
-      grouped[key] += value;
-    });
-
-    return Object.entries(
-      grouped
-    ).map(([key, value]) => ({
-      [chart.xAxis]: key,
-      [chart.yAxis]: value,
-    }));
-  }
-
-  // LINE
-  if (
-    chart.chartType === "line"
-  ) {
-    const grouped: any = {};
-
-    safeData.forEach((row) => {
-      const key =
-        row[chart.xAxis];
-
-      const value =
-        Number(
-          row[chart.yAxis]
-        ) || 0;
-
-      if (!grouped[key]) {
-        grouped[key] = 0;
-      }
-
-      grouped[key] += value;
-    });
-
-    return Object.entries(
-      grouped
-    )
-      .map(([key, value]) => ({
-        [chart.xAxis]: key,
-        [chart.yAxis]: value,
-      }))
-      .sort((a, b) =>
-        String(
-          a[
-            chart.xAxis
-          ]
-        ).localeCompare(
-          String(
-            b[
+          const key =
+            row[
               chart.xAxis
-            ]
-          )
-        )
+            ];
+
+          const value =
+            Number(
+              row[
+                chart
+                  .yAxis
+              ]
+            ) || 0;
+
+          if (
+            !grouped[key]
+          ) {
+            grouped[key] = 0;
+          }
+
+          grouped[key] +=
+            value;
+        }
       );
-  }
 
-  return safeData;
-};
+      return Object.entries(
+        grouped
+      )
+        .map(
+          ([key, value]) => ({
+            [chart.xAxis]:
+              key,
 
-const chartData =
-  aggregateData();
+            [chart.yAxis]:
+              value,
+          })
+        )
+        .sort((a, b) =>
+          String(
+            a[
+              chart
+                .xAxis
+            ]
+          ).localeCompare(
+            String(
+              b[
+                chart
+                  .xAxis
+              ]
+            )
+          )
+        );
+    }
+
+    return safeData;
+  };
+
+  const chartData =
+    aggregateData();
+
+  const exportChart =
+  async () => {
+
+    if (
+      !chartRef.current
+    ) {
+      return;
+    }
+
+    const canvas =
+      await html2canvas(
+        chartRef.current,
+        {
+          backgroundColor:
+            "#0f172a",
+
+          scale: 3,
+
+          useCORS: true,
+        }
+      );
+
+    const image =
+      canvas.toDataURL(
+        "image/png",
+        1.0
+      );
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+    link.href = image;
+
+    link.download =
+      `${chart.chartType}-chart.png`;
+
+    link.click();
+  };
+
+
 
   const renderChart = () => {
-    switch (chart.chartType?.toLowerCase()) {
+
+    switch (
+      chart.chartType?.toLowerCase()
+    ) {
+
       case "bar":
         return (
           <ResponsiveContainer
             width="100%"
             height={300}
           >
-            <BarChart data={chartData}>
+            <BarChart
+              data={
+                chartData
+              }
+            >
               <CartesianGrid strokeDasharray="3 3" />
 
-              <XAxis dataKey={chart.xAxis} />
+              <XAxis
+                dataKey={
+                  chart.xAxis
+                }
+              />
 
               <YAxis />
 
               <Tooltip />
 
               <Bar
-                dataKey={chart.yAxis}
+                dataKey={
+                  chart.yAxis
+                }
                 fill="#3b82f6"
               />
             </BarChart>
@@ -159,10 +271,18 @@ const chartData =
             width="100%"
             height={300}
           >
-            <LineChart data={chartData}>
+            <LineChart
+              data={
+                chartData
+              }
+            >
               <CartesianGrid strokeDasharray="3 3" />
 
-              <XAxis dataKey={chart.xAxis} />
+              <XAxis
+                dataKey={
+                  chart.xAxis
+                }
+              />
 
               <YAxis />
 
@@ -170,7 +290,9 @@ const chartData =
 
               <Line
                 type="monotone"
-                dataKey={chart.yAxis}
+                dataKey={
+                  chart.yAxis
+                }
                 stroke="#10b981"
               />
             </LineChart>
@@ -178,51 +300,75 @@ const chartData =
         );
 
       case "pie":
-  const pieGrouped: any = {};
 
-  safeData.forEach((row) => {
-    const key =
-      row[chart.xAxis] || "Unknown";
+        const pieGrouped: any =
+          {};
 
-    pieGrouped[key] =
-      (pieGrouped[key] || 0) + 1;
-  });
+        safeData.forEach(
+          (row) => {
 
-  const pieData =
-    Object.entries(pieGrouped).map(
-      ([key, value]) => ({
-        name: key,
-        value,
-      })
-    );
+            const key =
+              row[
+                chart.xAxis
+              ] ||
+              "Unknown";
 
-  return (
-    <ResponsiveContainer
-      width="100%"
-      height={350}
-    >
-      <PieChart>
-        <Pie
-          data={pieData}
-          dataKey="value"
-          nameKey="name"
-          outerRadius={120}
-          label
-        >
-          {pieData.map(
-            (_, index) => (
-              <Cell
-                key={index}
-                fill={`hsl(${index * 40},70%,60%)`}
-              />
-            )
-          )}
-        </Pie>
+            pieGrouped[key] =
+              (pieGrouped[
+                key
+              ] || 0) + 1;
+          }
+        );
 
-        <Tooltip />
-      </PieChart>
-    </ResponsiveContainer>
-  );
+        const pieData =
+          Object.entries(
+            pieGrouped
+          ).map(
+            ([
+              key,
+              value,
+            ]) => ({
+              name: key,
+              value,
+            })
+          );
+
+        return (
+          <ResponsiveContainer
+            width="100%"
+            height={350}
+          >
+            <PieChart>
+              <Pie
+                data={
+                  pieData
+                }
+                dataKey="value"
+                nameKey="name"
+                outerRadius={
+                  120
+                }
+                label
+              >
+                {pieData.map(
+                  (
+                    _,
+                    index
+                  ) => (
+                    <Cell
+                      key={
+                        index
+                      }
+                      fill={`hsl(${index * 40},70%,60%)`}
+                    />
+                  )
+                )}
+              </Pie>
+
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        );
 
       case "scatter":
         return (
@@ -234,19 +380,29 @@ const chartData =
               <CartesianGrid />
 
               <XAxis
-                dataKey={chart.xAxis}
-                name={chart.xAxis}
+                dataKey={
+                  chart.xAxis
+                }
+                name={
+                  chart.xAxis
+                }
               />
 
               <YAxis
-                dataKey={chart.yAxis}
-                name={chart.yAxis}
+                dataKey={
+                  chart.yAxis
+                }
+                name={
+                  chart.yAxis
+                }
               />
 
               <Tooltip />
 
               <Scatter
-                data={chartData}
+                data={
+                  chartData
+                }
                 fill="#f59e0b"
               />
             </ScatterChart>
@@ -263,14 +419,26 @@ const chartData =
   };
 
   return (
-    <div className="bg-slate-800 p-6 rounded-2xl">
+    <div
+      ref={chartRef}
+      className="bg-slate-800/60 backdrop-blur p-8 rounded-3xl shadow-xl border border-slate-700"
+    >
       <h2 className="text-2xl font-bold capitalize mb-2">
         {chart.chartType} Chart
       </h2>
 
-      <p className="text-slate-300 mb-6">
+      <p className="text-slate-300 mb-4">
         {chart.reason}
       </p>
+
+      <button
+        onClick={
+          exportChart
+        }
+        className="mb-6 bg-emerald-500 hover:bg-emerald-600 transition px-5 py-3 rounded-xl font-bold"
+      >
+        Export PNG
+      </button>
 
       {renderChart()}
     </div>
