@@ -9,11 +9,17 @@ import InsightCards from "./InsightCards";
 import DataTable from "./DataTable";
 import ExportButton from "./ExportButton";
 import ThemeToggle from "./ThemeToggle";
+import FilterBar from "./FilterBar";
 
 export default function DropZone() {
 
   const [darkMode, setDarkMode] =
     useState(true);
+
+  const [filters, setFilters] =
+  useState<
+    Record<string, string>
+  >({});
 
   const [loading, setLoading] =
     useState(false);
@@ -139,6 +145,35 @@ export default function DropZone() {
   } = useDropzone({
     onDrop,
   });
+
+
+const filteredData =
+  cleanedData.filter(
+    (row) => {
+
+      return Object.entries(
+        filters
+      ).every(
+        ([
+          column,
+          value,
+        ]) => {
+
+          if (!value)
+            return true;
+
+          return (
+            String(
+              row[
+                column
+              ]
+            ) === value
+          );
+        }
+      );
+    }
+  );
+
 
   return (
     <div
@@ -342,8 +377,14 @@ export default function DropZone() {
         </div>
       )}
 
+      <FilterBar
+  data={cleanedData }
+  filters={filters}
+  setFilters={setFilters}
+/>
+
       <KpiCards
-  data={cleanedData}
+  data={filteredData}
 />
 
       {/* INSIGHTS */}
@@ -368,7 +409,7 @@ export default function DropZone() {
                 <ChartCard
                   key={index}
                   chart={chart}
-                  data={cleanedData}
+                  data={filteredData}
                 />
               )
             )}
@@ -379,13 +420,13 @@ export default function DropZone() {
       {/* AI CHAT */}
       {rows > 0 && (
         <DatasetChat
-          data={cleanedData}
+          data={filteredData}
         />
       )}
 
       {/* DATA TABLE */}
       <DataTable
-        data={cleanedData}
+        data={filteredData}
       />
     </div>
   );
