@@ -7,6 +7,8 @@ import { cleanData } from "../services/DataCleaner";
 
 import { analyzeDataset } from "../services/AIAnalyser";
 
+import { generateInsights } from "../services/InsightAnalyzer";
+
 const router = express.Router();
 
 const upload = multer({
@@ -34,6 +36,12 @@ router.post("/", upload.single("file"), async (req, res) => {
         cleaned.columnTypes
       );
 
+    const insights =
+  await generateInsights(
+    cleaned.cleanedData,
+    cleaned.columnTypes
+  );
+
     res.json({
   success: true,
 
@@ -52,6 +60,8 @@ router.post("/", upload.single("file"), async (req, res) => {
   preview: cleaned.cleanedData.slice(0, 5),
 
   chartRecommendations,
+
+  insights,
 });
   } catch (error) {
     console.error(error);

@@ -3,6 +3,9 @@ import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import ChartCard from "./ChartCard";
 import DatasetChat from "./DatasetChat";
+import InsightCards from "./InsightCards";
+import DataTable from "./DataTable";
+import ExportButton from "./ExportButton";
 
 export default function DropZone() {
   const [loading, setLoading] = useState(false);
@@ -28,6 +31,9 @@ export default function DropZone() {
     chartRecommendations,
     setChartRecommendations,
   ] = useState<any[]>([]);
+
+  const [insights, setInsights] =
+  useState<any[]>([]);
 
   const onDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -83,6 +89,10 @@ export default function DropZone() {
           response.data
             .chartRecommendations
         );
+
+        setInsights(
+  response.data.insights || []
+);
       } catch (error) {
         console.error(error);
 
@@ -161,6 +171,12 @@ export default function DropZone() {
             Cleaning Summary
           </h2>
 
+          <div className="mb-8">
+  <ExportButton
+    data={cleanedData}
+  />
+</div>
+
           <div className="grid md:grid-cols-3 gap-5">
             <div className="bg-slate-700/60 p-6 rounded-2xl">
               <p className="text-slate-300 text-sm mb-2">
@@ -230,6 +246,10 @@ export default function DropZone() {
         </div>
       )}
 
+      <InsightCards
+  insights={insights}
+/>
+
       {/* AI DASHBOARD */}
       {chartRecommendations.length >
         0 && (
@@ -258,24 +278,9 @@ export default function DropZone() {
          />
       )}
 
-      {/* DATA PREVIEW */}
-      {rows > 0 && (
-        <div className="mt-14">
-          <h2 className="text-3xl font-bold mb-6">
-            Data Preview
-          </h2>
-
-          <div className="bg-slate-800/60 backdrop-blur p-6 rounded-3xl overflow-auto shadow-xl">
-            <pre className="text-sm">
-              {JSON.stringify(
-                dataPreview,
-                null,
-                2
-              )}
-            </pre>
-          </div>
-        </div>
-      )}
+      <DataTable
+  data={cleanedData}
+/>
     </div>
   );
 }

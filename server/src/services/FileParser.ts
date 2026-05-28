@@ -48,4 +48,4 @@ export const parseFile = async (
   throw new Error(
     "Unsupported file type"
   );
-};
+};  
