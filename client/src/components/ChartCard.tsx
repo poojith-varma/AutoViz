@@ -19,6 +19,38 @@ import html2canvas from "html2canvas";
 
 import { useRef } from "react";
 
+import PremiumCard from "./ui/PremiumCard";
+
+const axisStyle = {
+  stroke: "#71717a",
+  fontSize: 12,
+};
+
+const gridStyle = {
+  stroke:
+    "rgba(255,255,255,0.06)",
+};
+
+const tooltipStyle = {
+  backgroundColor:
+    "#18181b",
+
+  border:
+    "1px solid rgba(255,255,255,0.08)",
+
+  borderRadius: "16px",
+
+  color: "#fafafa",
+};
+
+const pieColors = [
+  "#60a5fa",
+  "#818cf8",
+  "#a78bfa",
+  "#38bdf8",
+  "#94a3b8",
+];
+
 type Props = {
   chart: any;
   data: any[];
@@ -35,7 +67,6 @@ export default function ChartCard({
   const safeData = data.filter(
     (item) => {
 
-      // PIE charts only need xAxis
       if (
         chart.chartType ===
         "pie"
@@ -47,7 +78,6 @@ export default function ChartCard({
         );
       }
 
-      // Other charts need both axes
       return (
         item[
           chart.xAxis
@@ -61,7 +91,6 @@ export default function ChartCard({
 
   const aggregateData = () => {
 
-    // BAR + PIE
     if (
       chart.chartType ===
         "bar" ||
@@ -112,7 +141,6 @@ export default function ChartCard({
       );
     }
 
-    // LINE
     if (
       chart.chartType ===
       "line"
@@ -184,47 +212,45 @@ export default function ChartCard({
     aggregateData();
 
   const exportChart =
-  async () => {
+    async () => {
 
-    if (
-      !chartRef.current
-    ) {
-      return;
-    }
+      if (
+        !chartRef.current
+      ) {
+        return;
+      }
 
-    const canvas =
-      await html2canvas(
-        chartRef.current,
-        {
-          backgroundColor:
-            "#0f172a",
+      const canvas =
+        await html2canvas(
+          chartRef.current,
+          {
+            backgroundColor:
+              "#0f172a",
 
-          scale: 3,
+            scale: 3,
 
-          useCORS: true,
-        }
-      );
+            useCORS: true,
+          }
+        );
 
-    const image =
-      canvas.toDataURL(
-        "image/png",
-        1.0
-      );
+      const image =
+        canvas.toDataURL(
+          "image/png",
+          1.0
+        );
 
-    const link =
-      document.createElement(
-        "a"
-      );
+      const link =
+        document.createElement(
+          "a"
+        );
 
-    link.href = image;
+      link.href = image;
 
-    link.download =
-      `${chart.chartType}-chart.png`;
+      link.download =
+        `${chart.chartType}-chart.png`;
 
-    link.click();
-  };
-
-
+      link.click();
+    };
 
   const renderChart = () => {
 
@@ -236,30 +262,46 @@ export default function ChartCard({
         return (
           <ResponsiveContainer
             width="100%"
-            height={300}
+            height={320}
           >
             <BarChart
-              data={
-                chartData
-              }
+              data={chartData}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={
+                  gridStyle.stroke
+                }
+              />
 
               <XAxis
                 dataKey={
                   chart.xAxis
                 }
+                tick={axisStyle}
               />
 
-              <YAxis />
+              <YAxis
+                tick={axisStyle}
+              />
 
-              <Tooltip />
+              <Tooltip
+                contentStyle={
+                  tooltipStyle
+                }
+              />
 
               <Bar
                 dataKey={
                   chart.yAxis
                 }
-                fill="#3b82f6"
+                fill="#60a5fa"
+                radius={[
+                  8,
+                  8,
+                  0,
+                  0,
+                ]}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -269,31 +311,43 @@ export default function ChartCard({
         return (
           <ResponsiveContainer
             width="100%"
-            height={300}
+            height={320}
           >
             <LineChart
-              data={
-                chartData
-              }
+              data={chartData}
             >
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={
+                  gridStyle.stroke
+                }
+              />
 
               <XAxis
                 dataKey={
                   chart.xAxis
                 }
+                tick={axisStyle}
               />
 
-              <YAxis />
+              <YAxis
+                tick={axisStyle}
+              />
 
-              <Tooltip />
+              <Tooltip
+                contentStyle={
+                  tooltipStyle
+                }
+              />
 
               <Line
                 type="monotone"
                 dataKey={
                   chart.yAxis
                 }
-                stroke="#10b981"
+                stroke="#38bdf8"
+                strokeWidth={3}
+                dot={false}
               />
             </LineChart>
           </ResponsiveContainer>
@@ -336,18 +390,16 @@ export default function ChartCard({
         return (
           <ResponsiveContainer
             width="100%"
-            height={350}
+            height={360}
           >
             <PieChart>
               <Pie
-                data={
-                  pieData
-                }
+                data={pieData}
                 dataKey="value"
                 nameKey="name"
-                outerRadius={
-                  120
-                }
+                outerRadius={120}
+                innerRadius={70}
+                paddingAngle={3}
                 label
               >
                 {pieData.map(
@@ -356,16 +408,23 @@ export default function ChartCard({
                     index
                   ) => (
                     <Cell
-                      key={
-                        index
+                      key={index}
+                      fill={
+                        pieColors[
+                          index %
+                            pieColors.length
+                        ]
                       }
-                      fill={`hsl(${index * 40},70%,60%)`}
                     />
                   )
                 )}
               </Pie>
 
-              <Tooltip />
+              <Tooltip
+                contentStyle={
+                  tooltipStyle
+                }
+              />
             </PieChart>
           </ResponsiveContainer>
         );
@@ -374,10 +433,14 @@ export default function ChartCard({
         return (
           <ResponsiveContainer
             width="100%"
-            height={300}
+            height={320}
           >
             <ScatterChart>
-              <CartesianGrid />
+              <CartesianGrid
+                stroke={
+                  gridStyle.stroke
+                }
+              />
 
               <XAxis
                 dataKey={
@@ -386,6 +449,7 @@ export default function ChartCard({
                 name={
                   chart.xAxis
                 }
+                tick={axisStyle}
               />
 
               <YAxis
@@ -395,15 +459,18 @@ export default function ChartCard({
                 name={
                   chart.yAxis
                 }
+                tick={axisStyle}
               />
 
-              <Tooltip />
+              <Tooltip
+                contentStyle={
+                  tooltipStyle
+                }
+              />
 
               <Scatter
-                data={
-                  chartData
-                }
-                fill="#f59e0b"
+                data={chartData}
+                fill="#818cf8"
               />
             </ScatterChart>
           </ResponsiveContainer>
@@ -419,28 +486,46 @@ export default function ChartCard({
   };
 
   return (
-    <div
-      ref={chartRef}
-      className="bg-slate-800/60 backdrop-blur p-8 rounded-3xl shadow-xl border border-slate-700"
-    >
-      <h2 className="text-2xl font-bold capitalize mb-2">
-        {chart.chartType} Chart
-      </h2>
+    <PremiumCard className="p-8">
 
-      <p className="text-slate-300 mb-4">
-        {chart.reason}
-      </p>
+      <div ref={chartRef}>
 
-      <button
-        onClick={
-          exportChart
-        }
-        className="mb-6 bg-emerald-500 hover:bg-emerald-600 transition px-5 py-3 rounded-xl font-bold"
-      >
-        Export PNG
-      </button>
+        <div className="mb-6">
 
-      {renderChart()}
-    </div>
+          <h2 className="text-xl font-semibold tracking-tight capitalize">
+            {chart.chartType} Chart
+          </h2>
+
+          <p className="text-sm leading-7 dark:text-zinc-400 text-slate-600 mt-3 mb-6">
+            {chart.reason}
+          </p>
+
+          <button
+            onClick={
+              exportChart
+            }
+            className="
+              inline-flex
+              items-center
+              rounded-2xl
+              border
+              border-white/[0.08]
+              bg-white/[0.03]
+              px-5
+              py-3
+              text-sm
+              font-medium
+              text-zinc-200
+              hover:bg-white/[0.06]
+              transition-all
+            "
+          >
+            Export PNG
+          </button>
+        </div>
+
+        {renderChart()}
+      </div>
+    </PremiumCard>
   );
 }

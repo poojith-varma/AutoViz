@@ -1,3 +1,5 @@
+import PremiumCard from "./ui/PremiumCard";
+
 type Props = {
   data: any[];
 };
@@ -154,8 +156,7 @@ export default function KpiCards({
 
   return (
     <div className="mt-14">
-
-      <h2 className="text-4xl font-black mb-8">
+      <h2 className="text-3xl font-semibold tracking-tight mb-10 dark:text-white text-slate-900">
         KPI Overview
       </h2>
 
@@ -166,18 +167,20 @@ export default function KpiCards({
             card,
             index
           ) => (
-            <div
-              key={index}
-              className="bg-slate-800/60 backdrop-blur p-6 rounded-3xl shadow-xl border border-slate-700"
-            >
-              <p className="text-slate-400 text-sm mb-3">
-                {card.title}
-              </p>
+            <PremiumCard
+  key={index}
+  className="p-6"
+>
 
-              <h3 className="text-3xl font-black">
-                {card.value}
-              </h3>
-            </div>
+<p className="text-sm dark:text-zinc-400 text-slate-600 mb-3">
+  {card.title}
+</p>
+
+<h3 className="text-4xl font-semibold tracking-tight dark:text-white text-slate-900">
+  {card.value}
+</h3>
+
+            </PremiumCard>
           )
         )}
       </div>

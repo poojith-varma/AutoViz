@@ -1,3 +1,5 @@
+import PremiumCard from "./ui/PremiumCard";
+
 type Props = {
   insights: any[];
 };
@@ -17,7 +19,7 @@ export default function InsightCards({
 
   return (
     <div className="mt-14">
-      <h2 className="text-4xl font-black mb-8">
+      <h2 className="text-3xl font-semibold tracking-tight mb-8">
         AI Insights
       </h2>
 
@@ -27,24 +29,24 @@ export default function InsightCards({
             insight,
             index
           ) => (
-            <div
-              key={index}
-              className="bg-slate-800/60 backdrop-blur p-6 rounded-3xl shadow-xl border border-slate-700"
-            >
-              <h3 className="text-xl font-bold mb-3 text-blue-400">
+            <PremiumCard
+  key={index}
+  className="p-7"
+>
+              <h3 className="text-lg font-semibold tracking-tight mb-3 text-white">
                 {
                   insight?.title ||
                   "Insight"
                 }
               </h3>
 
-              <p className="text-slate-300 leading-relaxed">
+              <p className="text-sm leading-7 text-zinc-400">
                 {
                   insight?.description ||
                   "No description"
                 }
               </p>
-            </div>
+            </PremiumCard>
           )
         )}
       </div>

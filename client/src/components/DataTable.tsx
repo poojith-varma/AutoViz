@@ -103,12 +103,12 @@ export default function DataTable({
             e.target.value
           )
         }
-        className="mb-6 w-full bg-slate-900 border border-slate-700 rounded-2xl px-5 py-4 outline-none focus:border-blue-400"
+        className="mb-6 w-full dark:bg-slate-900 bg-slate-200 border border-slate-700 rounded-2xl px-5 py-4 outline-none focus:border-blue-400"
       />
 
       <div className="overflow-auto rounded-3xl border border-slate-700 shadow-xl max-h-[600px]">
         <table className="min-w-full bg-slate-800 text-sm">
-          <thead className="bg-slate-900 sticky top-0">
+          <thead className="dark:bg-slate-900 bg-slate-200 sticky top-0">
             {table
               .getHeaderGroups()
               .map(
@@ -128,7 +128,7 @@ export default function DataTable({
                           key={
                             header.id
                           }
-                          className="px-5 py-4 text-left text-slate-300 font-bold border-b border-slate-700 whitespace-nowrap"
+                          className="px-5 py-4 text-left dark:text-slate-300 text-slate-700 font-bold border-b border-slate-700 whitespace-nowrap"
                         >
                           {flexRender(
                             header

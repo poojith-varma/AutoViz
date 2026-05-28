@@ -42,22 +42,22 @@ export default function FilterBar({
           new Set(sample);
 
         return (
-  typeof sample[0] ===
-    "string" &&
-  unique.size > 1 &&
-  unique.size <= 20
-);
+          typeof sample[0] ===
+            "string" &&
+          unique.size > 1 &&
+          unique.size <= 20
+        );
       }
     );
 
   return (
-    <div className="mt-14">
+    <div className="mt-20">
 
-      <h2 className="text-4xl font-black mb-8">
+      <h2 className="text-3xl font-semibold tracking-tight mb-10 dark:text-white text-slate-900">
         Dataset Filters
       </h2>
 
-      <div className="grid md:grid-cols-4 gap-5">
+      <div className="grid md:grid-cols-4 gap-6">
 
         {possibleFilters.map(
           (column) => {
@@ -80,7 +80,8 @@ export default function FilterBar({
               <div
                 key={column}
               >
-                <label className="block mb-2 font-semibold">
+
+                <label className="block mb-3 text-sm font-medium dark:text-zinc-300 text-slate-700">
                   {column}
                 </label>
 
@@ -90,9 +91,7 @@ export default function FilterBar({
                       column
                     ] || ""
                   }
-                  onChange={(
-                    e
-                  ) =>
+                  onChange={(e) =>
                     setFilters(
                       (
                         prev
@@ -106,7 +105,25 @@ export default function FilterBar({
                       })
                     )
                   }
-                  className="w-full bg-slate-800 border border-slate-700 rounded-2xl px-4 py-3"
+                  className="
+                    w-full
+                    rounded-2xl
+                    border
+                    dark:border-white/[0.08]
+                    border-black/[0.08]
+                    dark:bg-[#18181b]
+                    bg-white
+                    px-4
+                    py-3.5
+                    dark:text-white
+                    text-slate-900
+                    outline-none
+                    transition-all
+                    shadow-sm
+                    focus:ring-2
+                    focus:ring-blue-500/20
+                    focus:border-blue-500/30
+                  "
                 >
                   <option value="">
                     All
