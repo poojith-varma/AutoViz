@@ -2,11 +2,15 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import ChartCard from "./ChartCard";
+import DatasetChat from "./DatasetChat";
 
 export default function DropZone() {
   const [loading, setLoading] = useState(false);
 
   const [dataPreview, setDataPreview] = useState<any[]>([]);
+
+  const [cleanedData, setCleanedData] =
+  useState<any[]>([]);
 
   const [rows, setRows] = useState(0);
 
@@ -16,6 +20,9 @@ export default function DropZone() {
 
   const [columnTypes, setColumnTypes] =
     useState<any>({});
+
+  const [warnings, setWarnings] =
+  useState<string[]>([]);
 
   const [
     chartRecommendations,
@@ -50,6 +57,10 @@ export default function DropZone() {
           response.data.preview
         );
 
+        setCleanedData(
+  response.data.cleanedData || []
+);
+
         setRows(response.data.rows);
 
         setRemovedRows(
@@ -63,6 +74,10 @@ export default function DropZone() {
         setColumnTypes(
           response.data.columnTypes
         );
+
+        setWarnings(
+  response.data.warnings || []
+);
 
         setChartRecommendations(
           response.data
@@ -118,15 +133,14 @@ export default function DropZone() {
           </div>
         ) : (
           <div>
-            <p className="text-3xl font-bold mb-4">
-              Drag & Drop Dataset
-            </p>
+  <p className="text-3xl font-bold mb-4">
+    Drag & Drop Dataset
+  </p>
 
-            <p className="text-slate-400">
-              Supports CSV, Excel,
-              JSON & PDF tables
-            </p>
-          </div>
+  <p className="text-slate-400">
+    Supports CSV, XLSX, JSON & PDF tables
+  </p>
+</div>
         )}
       </div>
 
@@ -179,6 +193,27 @@ export default function DropZone() {
             </div>
           </div>
 
+          {warnings.length > 0 && (
+  <div className="mt-8">
+    <h3 className="text-xl font-bold mb-4 text-yellow-400">
+      Cleaning Warnings
+    </h3>
+
+    <div className="space-y-3">
+      {warnings.map(
+        (warning, index) => (
+          <div
+            key={index}
+            className="bg-yellow-500/10 border border-yellow-500/20 p-4 rounded-xl text-yellow-300"
+          >
+            ⚠️ {warning}
+          </div>
+        )
+      )}
+    </div>
+  </div>
+)}
+
           <div className="mt-8">
             <h3 className="font-bold text-xl mb-4">
               Column Types
@@ -209,12 +244,18 @@ export default function DropZone() {
                 <ChartCard
                   key={index}
                   chart={chart}
-                  data={dataPreview}
+                  data={cleanedData}
                 />
               )
             )}
           </div>
         </div>
+      )}
+
+      {rows > 0 && (
+        <DatasetChat
+          data={cleanedData}
+         />
       )}
 
       {/* DATA PREVIEW */}

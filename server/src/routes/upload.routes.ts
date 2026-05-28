@@ -35,20 +35,24 @@ router.post("/", upload.single("file"), async (req, res) => {
       );
 
     res.json({
-      success: true,
+  success: true,
 
-      rows: cleaned.cleanedData.length,
+  rows: cleaned.cleanedData.length,
 
-      removedRows: cleaned.removedRows,
+  removedRows: cleaned.removedRows,
 
-      duplicateRows: cleaned.duplicateRows,
+  duplicateRows: cleaned.duplicateRows,
 
-      columnTypes: cleaned.columnTypes,
+  columnTypes: cleaned.columnTypes,
 
-      preview: cleaned.cleanedData.slice(0, 5),
+  cleanedData: cleaned.cleanedData,
 
-      chartRecommendations,
-    });
+  warnings: cleaned.warnings,
+
+  preview: cleaned.cleanedData.slice(0, 5),
+
+  chartRecommendations,
+});
   } catch (error) {
     console.error(error);
 

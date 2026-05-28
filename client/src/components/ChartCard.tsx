@@ -25,10 +25,108 @@ export default function ChartCard({
   data,
 }: Props) {
   const safeData = data.filter(
-    (item) =>
-      item[chart.xAxis] !== undefined &&
-      item[chart.yAxis] !== undefined
-  );
+  (item) => {
+    // PIE charts only need xAxis
+    if (
+      chart.chartType === "pie"
+    ) {
+      return (
+        item[chart.xAxis] !==
+        undefined
+      );
+    }
+
+    // Other charts need both axes
+    return (
+      item[chart.xAxis] !==
+        undefined &&
+      item[chart.yAxis] !==
+        undefined
+    );
+  }
+);
+
+  const aggregateData = () => {
+  // BAR + PIE
+  if (
+    chart.chartType === "bar" ||
+    chart.chartType === "pie"
+  ) {
+    const grouped: any = {};
+
+    safeData.forEach((row) => {
+      const key =
+        row[chart.xAxis];
+
+      const value =
+        Number(
+          row[chart.yAxis]
+        ) || 0;
+
+      if (!grouped[key]) {
+        grouped[key] = 0;
+      }
+
+      grouped[key] += value;
+    });
+
+    return Object.entries(
+      grouped
+    ).map(([key, value]) => ({
+      [chart.xAxis]: key,
+      [chart.yAxis]: value,
+    }));
+  }
+
+  // LINE
+  if (
+    chart.chartType === "line"
+  ) {
+    const grouped: any = {};
+
+    safeData.forEach((row) => {
+      const key =
+        row[chart.xAxis];
+
+      const value =
+        Number(
+          row[chart.yAxis]
+        ) || 0;
+
+      if (!grouped[key]) {
+        grouped[key] = 0;
+      }
+
+      grouped[key] += value;
+    });
+
+    return Object.entries(
+      grouped
+    )
+      .map(([key, value]) => ({
+        [chart.xAxis]: key,
+        [chart.yAxis]: value,
+      }))
+      .sort((a, b) =>
+        String(
+          a[
+            chart.xAxis
+          ]
+        ).localeCompare(
+          String(
+            b[
+              chart.xAxis
+            ]
+          )
+        )
+      );
+  }
+
+  return safeData;
+};
+
+const chartData =
+  aggregateData();
 
   const renderChart = () => {
     switch (chart.chartType?.toLowerCase()) {
@@ -38,7 +136,7 @@ export default function ChartCard({
             width="100%"
             height={300}
           >
-            <BarChart data={safeData}>
+            <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
 
               <XAxis dataKey={chart.xAxis} />
@@ -61,7 +159,7 @@ export default function ChartCard({
             width="100%"
             height={300}
           >
-            <LineChart data={safeData}>
+            <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
 
               <XAxis dataKey={chart.xAxis} />
@@ -80,31 +178,51 @@ export default function ChartCard({
         );
 
       case "pie":
-        return (
-          <ResponsiveContainer
-            width="100%"
-            height={300}
-          >
-            <PieChart>
-              <Pie
-                data={safeData}
-                dataKey={chart.yAxis}
-                nameKey={chart.xAxis}
-                outerRadius={100}
-                label
-              >
-                {safeData.map((_, index) => (
-                  <Cell
-                    key={index}
-                    fill={`hsl(${index * 40},70%,60%)`}
-                  />
-                ))}
-              </Pie>
+  const pieGrouped: any = {};
 
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        );
+  safeData.forEach((row) => {
+    const key =
+      row[chart.xAxis] || "Unknown";
+
+    pieGrouped[key] =
+      (pieGrouped[key] || 0) + 1;
+  });
+
+  const pieData =
+    Object.entries(pieGrouped).map(
+      ([key, value]) => ({
+        name: key,
+        value,
+      })
+    );
+
+  return (
+    <ResponsiveContainer
+      width="100%"
+      height={350}
+    >
+      <PieChart>
+        <Pie
+          data={pieData}
+          dataKey="value"
+          nameKey="name"
+          outerRadius={120}
+          label
+        >
+          {pieData.map(
+            (_, index) => (
+              <Cell
+                key={index}
+                fill={`hsl(${index * 40},70%,60%)`}
+              />
+            )
+          )}
+        </Pie>
+
+        <Tooltip />
+      </PieChart>
+    </ResponsiveContainer>
+  );
 
       case "scatter":
         return (
@@ -128,7 +246,7 @@ export default function ChartCard({
               <Tooltip />
 
               <Scatter
-                data={safeData}
+                data={chartData}
                 fill="#f59e0b"
               />
             </ScatterChart>

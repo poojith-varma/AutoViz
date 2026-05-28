@@ -1,20 +1,51 @@
-import path from "path";
 import { parseCSV } from "../parsers/csvParser";
+
+import { parseExcel } from "../parsers/excelParser";
+
+import { parseJSON } from "../parsers/jsonParser";
 
 export const parseFile = async (
   filePath: string,
   mimetype: string
 ) => {
-  const ext = path.extname(filePath);
+  console.log(
+    "Parsing file:",
+    mimetype
+  );
 
-  console.log("Parsing file:", ext);
-
+  // CSV
   if (
-    mimetype === "text/csv" ||
-    ext === ".csv"
+    mimetype.includes("csv")
   ) {
-    return await parseCSV(filePath);
+    return await parseCSV(
+      filePath
+    );
   }
 
-  throw new Error("Unsupported file type");
+  // Excel
+  if (
+    mimetype.includes(
+      "spreadsheet"
+    ) ||
+    mimetype.includes("excel")
+  ) {
+    return parseExcel(
+      filePath
+    );
+  }
+
+  // JSON
+  if (
+    mimetype.includes(
+      "json"
+    )
+  ) {
+    return parseJSON(
+      filePath
+    );
+  }
+
+  throw new Error(
+    "Unsupported file type"
+  );
 };
