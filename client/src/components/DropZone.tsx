@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import axios from "axios";
+import KpiCards from "./KpiCards";
 
 import ChartCard from "./ChartCard";
 import DatasetChat from "./DatasetChat";
@@ -340,6 +341,10 @@ export default function DropZone() {
           </div>
         </div>
       )}
+
+      <KpiCards
+  data={cleanedData}
+/>
 
       {/* INSIGHTS */}
       <InsightCards
