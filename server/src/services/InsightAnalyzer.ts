@@ -10,7 +10,7 @@ export const generateInsights =
   ) => {
     try {
       const sample =
-        data.slice(0, 50);
+        data.slice(0, 10);
 
       const prompt = `
 You are an expert business intelligence analyst.

@@ -10,6 +10,7 @@ import DataTable from "./DataTable";
 import ExportButton from "./ExportButton";
 import ThemeToggle from "./ThemeToggle";
 import FilterBar from "./FilterBar";
+import OutlierAnalysis from "./OutlierAnalysis";
 
 import PremiumCard from "./ui/PremiumCard";
 
@@ -53,6 +54,10 @@ export default function DropZone() {
   ] = useState<any[]>([]);
 
   const [insights, setInsights] =
+    useState<any[]>([]);
+
+  const [outliers,
+    setOutliers] =
     useState<any[]>([]);
 
   const onDrop = useCallback(
@@ -125,6 +130,10 @@ export default function DropZone() {
         setInsights(
           response.data.insights || []
         );
+
+        setOutliers(
+  response.data.outliers || []
+);
 
       } catch (error) {
 
@@ -498,6 +507,10 @@ className="
         <KpiCards
           data={filteredData}
         />
+
+        <OutlierAnalysis
+  outliers={outliers}
+/>
 
         {/* INSIGHTS */}
         <InsightCards

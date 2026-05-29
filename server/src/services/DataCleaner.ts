@@ -1,9 +1,18 @@
+type OutlierInfo = {
+  column: string;
+  count: number;
+  lowerBound: number;
+  upperBound: number;
+  values: number[];
+};
+
 type CleanResult = {
   cleanedData: any[];
   removedRows: number;
   duplicateRows: number;
   columnTypes: Record<string, string>;
   warnings: string[];
+  outliers: OutlierInfo[];
 };
 
 export const cleanData = (
@@ -13,17 +22,21 @@ export const cleanData = (
   if (!data.length) {
 
     return {
-      cleanedData: [],
-      removedRows: 0,
-      duplicateRows: 0,
-      columnTypes: {},
-      warnings: [],
-    };
+  cleanedData: [],
+  removedRows: 0,
+  duplicateRows: 0,
+  columnTypes: {},
+  warnings: [],
+  outliers: [],
+};
   }
 
   // Use Set to avoid duplicate warnings
   const warnings =
     new Set<string>();
+
+  const outlierResults:
+  OutlierInfo[] = [];
 
   // Remove fully empty rows
   const nonEmptyRows =
@@ -372,24 +385,44 @@ export const cleanData = (
       );
 
     if (
-      outliers.length > 0
-    ) {
+  outliers.length > 0
+) {
 
-      warnings.add(
-        `Detected ${outliers.length} outliers in ${column}`
-      );
-    }
+  warnings.add(
+    `Detected ${outliers.length} outliers in ${column}`
+  );
+
+  outlierResults.push({
+    column,
+
+    count:
+      outliers.length,
+
+    lowerBound,
+
+    upperBound,
+
+    values:
+      outliers.slice(
+        0,
+        20
+      ),
+  });
+}
   });
 
   return {
-    cleanedData,
-    removedRows,
-    duplicateRows,
-    columnTypes,
+  cleanedData,
+  removedRows,
+  duplicateRows,
+  columnTypes,
 
-    warnings:
-      Array.from(
-        warnings
-      ),
-  };
+  warnings:
+    Array.from(
+      warnings
+    ),
+
+  outliers:
+    outlierResults,
+};
 };

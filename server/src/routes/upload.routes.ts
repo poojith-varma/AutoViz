@@ -62,6 +62,9 @@ router.post("/", upload.single("file"), async (req, res) => {
   chartRecommendations,
 
   insights,
+
+  outliers:
+  cleaned.outliers,
 });
   } catch (error) {
     console.error(error);
