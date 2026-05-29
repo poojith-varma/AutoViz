@@ -12,6 +12,7 @@ import ThemeToggle from "./ThemeToggle";
 import FilterBar from "./FilterBar";
 import OutlierAnalysis from "./OutlierAnalysis";
 import OutlierChart from "./OutlierChart";
+import DatasetProfile from "./DatasetProfile";
 
 import PremiumCard from "./ui/PremiumCard";
 
@@ -504,6 +505,22 @@ className="
           setFilters={setFilters}
         />
 
+        <DatasetProfile
+  data={filteredData}
+  columnTypes={
+    columnTypes
+  }
+  removedRows={
+    removedRows
+  }
+  duplicateRows={
+    duplicateRows
+  }
+  outliers={
+    outliers
+  }
+/>
+
         {/* KPI */}
         <KpiCards
           data={filteredData}
@@ -512,6 +529,7 @@ className="
         <OutlierAnalysis
   outliers={outliers}
 />
+
         <OutlierChart
   data={filteredData}
   outliers={outliers}
