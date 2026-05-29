@@ -1,6 +1,5 @@
 # Screenshots
 
-Add screenshots for:
 
 ## Home Page
 
