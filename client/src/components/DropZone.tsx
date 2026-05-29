@@ -29,8 +29,7 @@ export default function DropZone() {
   const [loading, setLoading] =
     useState(false);
 
-  const [dataPreview, setDataPreview] =
-    useState<any[]>([]);
+
 
   const [cleanedData, setCleanedData] =
     useState<any[]>([]);
@@ -96,9 +95,7 @@ export default function DropZone() {
             }
           );
 
-        setDataPreview(
-          response.data.preview
-        );
+        
 
         setCleanedData(
           response.data.cleanedData || []
