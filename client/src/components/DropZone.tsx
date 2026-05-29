@@ -11,6 +11,7 @@ import ExportButton from "./ExportButton";
 import ThemeToggle from "./ThemeToggle";
 import FilterBar from "./FilterBar";
 import OutlierAnalysis from "./OutlierAnalysis";
+import OutlierChart from "./OutlierChart";
 
 import PremiumCard from "./ui/PremiumCard";
 
@@ -509,6 +510,10 @@ className="
         />
 
         <OutlierAnalysis
+  outliers={outliers}
+/>
+        <OutlierChart
+  data={filteredData}
   outliers={outliers}
 />
 
