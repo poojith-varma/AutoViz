@@ -25,13 +25,13 @@ export default function DatasetChat({
 
       const response =
   await axios.post(
-    "http://localhost:5000/chat",
+    import.meta.env.VITE_API_URL + "/chat",
     {
       question,
 
       data: data.slice(
         0,
-        30
+        10
       ),
     }
   );
