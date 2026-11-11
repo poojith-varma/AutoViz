@@ -19,9 +19,7 @@ Instead of spending hours manually cleaning spreadsheets, creating dashboards, a
 
 ## 🌐 Live Demo
 
-Frontend: https://your-vercel-url.vercel.app
-
-Backend API: https://your-render-url.onrender.com
+Link : https://autoviz-api.onrender.com
 
 ## 🎯 Why AutoViz?
 
