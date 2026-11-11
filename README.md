@@ -19,8 +19,7 @@ Instead of spending hours manually cleaning spreadsheets, creating dashboards, a
 
 ## 🌐 Live Demo
 
-Link : https://autoviz-api.onrender.com
-
+Link : https://auto-viz.vercel.app
 ## 🎯 Why AutoViz?
 
 Data analysis often requires multiple tools and repetitive manual work:
